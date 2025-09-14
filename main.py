@@ -1,7 +1,7 @@
 from typing import Union
 from internal import scan
 from fastapi import FastAPI
-
+from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
 
 
