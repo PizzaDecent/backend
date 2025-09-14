@@ -13,6 +13,17 @@ def read_root():
 from fastapi import FastAPI, File, UploadFile
 
 app = FastAPI()
+origins = [
+   '*'
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.post("/predict")
 async def upload_image(file: UploadFile = File(...)):
