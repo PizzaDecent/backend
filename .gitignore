@@ -1,0 +1,7 @@
+car_state_model.pth
+
+# Ignore all files with .pth extension except car_state_model.pth
+*.pth
+venv/
+.venv/
+__pycache__
