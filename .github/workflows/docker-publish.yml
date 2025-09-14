@@ -33,4 +33,5 @@ jobs:
           IMAGE_NAME=ghcr.io/${{ github.repository_owner }}/fastapi-yolo:latest
           docker push $IMAGE_NAME
       - name: Output image info
-        run: echo "Docker image pushed: ghcr.io/${{ github.repository_owner }}/fastapi-yolo:latest"
+        run: | 
+          echo "Docker image pushed: ghcr.io/${{ github.repository_owner }}/fastapi-yolo:latest"
