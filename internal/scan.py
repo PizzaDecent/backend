@@ -4,9 +4,7 @@ from PIL import Image
 from ultralytics import YOLO
 import numpy as np
 
-# =========================
-# Конфиг
-# ========================
+
 CONFIDENCE_THRESHOLD = 0.3  # минимальная уверенность YOLO для всех классов
 MIN_AREA_RATIO_DEFAULT = 0.005
 MIN_AREA_RATIO_SCRATCH = 0.001
@@ -14,11 +12,9 @@ MAX_AREA_RATIO = 0.4
 IGNORE_DAMAGE_PERCENT = 1.0
 AVG_CONFIDENCE_MIN = 0.5
 
-# Минимальная уверенность по классу
 BOX_CONFIDENCE_MIN_DEFAULT = 0.2
 BOX_CONFIDENCE_MIN_SCRATCH = 0.2
 
-# Классы повреждений
 CLASSES = {
     0: "scratch",
     1: "dent",
@@ -27,16 +23,11 @@ CLASSES = {
     4: "broken_part"
 }
 
-# Путь к весам модели YOLO
 base_dir = os.path.dirname(__file__)
-weights_path = os.path.join(base_dir, "models/best.pt")
+weights_path = os.path.join(base_dir, "models/yolov8n.pt")
 
-# Глобальная переменная для модели
 model = None
 
-# =========================
-# Утилита для конвертации в JSON-совместимые типы
-# =========================
 def convert_to_json_compatible(obj):
     """Конвертирует numpy типы и другие объекты в JSON-совместимые типы"""
     if isinstance(obj, np.integer):
@@ -76,9 +67,7 @@ def load_model():
         print(f"🚀 Модель загружена на устройство: {device}")
     return model
 
-# =========================
-# Предсказание повреждений
-# =========================
+
 def predict_damage(img_path):
     yolo_model = load_model()
     if not os.path.exists(img_path):
@@ -109,7 +98,6 @@ def predict_damage(img_path):
                 class_id = int(cls)
                 damage_type = CLASSES.get(class_id, f"unknown_class_{class_id}")
 
-                # адаптивный порог площади и уверенности
                 min_area = MIN_AREA_RATIO_SCRATCH * img_w * img_h if damage_type == "scratch" else MIN_AREA_RATIO_DEFAULT * img_w * img_h
                 box_conf_min = BOX_CONFIDENCE_MIN_SCRATCH if damage_type == "scratch" else BOX_CONFIDENCE_MIN_DEFAULT
 
@@ -133,9 +121,7 @@ def predict_damage(img_path):
 
     return detections
 
-# =========================
-# Предсказание с метаданными
-# =========================
+
 def predict_damage_with_metadata(img_path):
     detections = predict_damage(img_path)
     img = Image.open(img_path)
@@ -155,7 +141,6 @@ def predict_damage_with_metadata(img_path):
     damage_percentage = (total_damage_area / image_area) * 100 if image_area > 0 else 0.0
     avg_confidence = float(np.mean(confidences_list)) if confidences_list else 0.0
 
-    # Логика severity
     if len(detections) == 0 or damage_percentage < IGNORE_DAMAGE_PERCENT or avg_confidence < AVG_CONFIDENCE_MIN:
         severity = "none"
     elif damage_percentage <= 5:
@@ -183,19 +168,8 @@ def predict_damage_with_metadata(img_path):
         "detections": detections
     }
     
-    # Конвертируем все в JSON-совместимые типы
     return convert_to_json_compatible(result)
 
-# =========================
-# Тестирование
-# =========================
+
 if __name__ == "__main__":
-    test_images = ["test.jpg", "example.jpg", "sample.png"]
-    for img_path in test_images:
-        if os.path.exists(img_path):
-            print(f"\n🔍 Тестируем: {img_path}")
-            result = predict_damage_with_metadata(img_path)
-            print(f"Серьезность: {result['damage_summary']['severity']}")
-            print(f"Процент повреждений: {result['damage_summary']['damage_percentage']}%")
-            print(f"Средняя уверенность: {result['damage_summary']['average_confidence']}%")
-            print(f"Детекции: {result['detections']}")
+    pass

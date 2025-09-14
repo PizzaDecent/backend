@@ -22,9 +22,3 @@ async def upload_image(file: UploadFile = File(...)):
         f.write(contents)
 
     return scan.predict_damage(f"uploads/{file.filename}")
-
-
-
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
